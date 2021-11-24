@@ -62,15 +62,16 @@ namespace FPSControllerLPFP
         //[Header("Audio Source")]
         //public AudioSource collectAmmoAudioSource;
 
-        [Serializable]
-        public class soundClips
-        {
-            public AudioClip collectAmmoSound;
-        }
-        public soundClips SoundClips;
+        //[Serializable]
+        //public class soundClips
+        //{
+        //    public AudioClip collectAmmoSound;
+        //}
+        //public soundClips SoundClips;
 
         [SerializeField]
-        private int health = 10;
+        private int Playerhealth = 10;
+        private int PlayerAmmo = 60;
         private bool immunity = false;
         private Rigidbody _rigidbody;
         private CapsuleCollider _collider;
@@ -120,20 +121,22 @@ namespace FPSControllerLPFP
             maxVerticalAngle = min;
         }
 
-        //void OnTriggerEnter(Collider other)
-        //{
-            //if (other.tag == "MedBox")
-            //{
-            //    Destroy(other.gameObject);
-            //}
+        void OnTriggerEnter(Collider other)
+        {
+            if (other.tag == "MedBox")
+            {
+                Destroy(other.gameObject);
+            }
 
-            //if (other.tag == "AmmoBox")
-            //{
-            //    collectAmmoAudioSource.clip = SoundClips.collectAmmoSound;
-            //    collectAmmoAudioSource.Play();
-            //    Destroy(other.gameObject);
-            //}
-        //}
+            if (other.tag == "AmmoBox")
+            {
+                //other.GetComponent<AutomaticGunScriptLPFP>().SoundClips.reloadSoundAmmoLeft;
+                //collectAmmoAudioSource.clip = SoundClips.collectAmmoSound;
+                //collectAmmoAudioSource.Play();
+                PlayerAmmo += 90;
+                Destroy(other.gameObject);
+            }
+        }
 
         private static float ClampRotationRestriction(float rotationRestriction, float min, float max)
         {
@@ -157,7 +160,7 @@ namespace FPSControllerLPFP
 
             _isGrounded = true;
 
-            if(collision.gameObject.tag == "Enemy" && !immunity)
+            if (collision.gameObject.tag == "Enemy" && !immunity)
             {
                 StartCoroutine("characterDamage");
             }
@@ -173,8 +176,14 @@ namespace FPSControllerLPFP
 
         private void Update()
         {
-            if (health == 0)        //Player death
+            if (Playerhealth == 0)        //Player death
                 Destroy(gameObject);    //For now, we are destroying the player (we have to change this later)
+
+            if(Input.GetKeyDown(KeyCode.R) && PlayerAmmo > 0 )
+            {
+                StartCoroutine("Recarga");
+                Debug.Log("Que pex");
+            }
 
             arms.position = transform.position + transform.TransformVector(armPosition);
             Jump();
@@ -193,7 +202,7 @@ namespace FPSControllerLPFP
             if (Input.GetKeyDown(KeyCode.Q))
             {
                 //Wait for the animation
-                
+
                 if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hit, 1f, enemyLayer))
                     StartCoroutine("WaitKnife", hit);
             }
@@ -382,27 +391,27 @@ namespace FPSControllerLPFP
             {
                 get { return Input.GetAxisRaw(rotateX); }
             }
-      
+
             public float RotateY
             {
                 get { return Input.GetAxisRaw(rotateY); }
             }
-       
+
             public float Move
             {
                 get { return Input.GetAxisRaw(move); }
             }
-        
+
             public float Strafe
             {
                 get { return Input.GetAxisRaw(strafe); }
             }
-        
+
             public bool Run
             {
                 get { return Input.GetButton(run); }
             }
-         
+
             public bool Jump
             {
                 get { return Input.GetButtonDown(jump); }
@@ -411,7 +420,7 @@ namespace FPSControllerLPFP
 
         IEnumerator characterDamage()
         {
-            health--;
+            Playerhealth--;
             immunity = true;
             yield return new WaitForSeconds(3.0f);
             immunity = false;
@@ -422,5 +431,30 @@ namespace FPSControllerLPFP
             yield return new WaitForSeconds(1.0f);
             hit.transform.gameObject.GetComponent<ZombieBehaviour>().ReceiveDamage(3);
         }
+
+        IEnumerator Recarga()
+        {
+
+            PlayerAmmo-=30;
+            //Debug.Log(PlayerAmmo);
+            yield return null;
+        }
+
+
+        public int getLife()
+        {
+            return Playerhealth;
+        }
+
+        public int getAmmo()
+        {
+            return PlayerAmmo;
+        }
+
+        public void PauseGame()
+        {
+            Time.timeScale = 0;
+        }
+
     }
 }

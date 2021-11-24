@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using FPSControllerLPFP;
 
 public class AutomaticGunScriptLPFP : MonoBehaviour {
 
@@ -9,7 +10,7 @@ public class AutomaticGunScriptLPFP : MonoBehaviour {
 	[Header("Gun Camera")]
 
 	public Camera gunCamera;
-
+	
 	[Header("Gun Camera Options")]
 	[Tooltip("How fast the camera field of view changes when aiming.")]
 	public float fovSpeed = 15.0f;
@@ -67,6 +68,12 @@ public class AutomaticGunScriptLPFP : MonoBehaviour {
 	//Totalt amount of ammo
 	[Tooltip("How much ammo the weapon should have.")]
 	public int ammo;
+	public int ammoPlayer;
+
+	[Header("Health Settings")]
+	[Tooltip("How much health.")]
+	public int health;
+
 	//Check if out of ammo
 	private bool outOfAmmo;
 
@@ -82,6 +89,7 @@ public class AutomaticGunScriptLPFP : MonoBehaviour {
 
 	[Header("Grenade Settings")]
 	public float grenadeSpawnDelay = 0.35f;
+	public GameObject controller;
 
 	[Header("Muzzleflash Settings")]
 	public bool randomMuzzleflash = false;
@@ -115,6 +123,9 @@ public class AutomaticGunScriptLPFP : MonoBehaviour {
 	public Text currentWeaponText;
 	public Text currentAmmoText;
 	public Text totalAmmoText;
+	public Text currentHealthText;
+
+	public Button pauseBtn;
 
 	[System.Serializable]
 	public class prefabs
@@ -167,7 +178,8 @@ public class AutomaticGunScriptLPFP : MonoBehaviour {
 		
 		storedWeaponName = weaponName;
 		currentWeaponText.text = weaponName;
-		totalAmmoText.text = ammo.ToString();
+		
+		totalAmmoText.text = controller.GetComponent<FpsControllerLPFP>().getAmmo().ToString();
 
 		initialSwayPosition = transform.localPosition;
 
@@ -194,7 +206,9 @@ public class AutomaticGunScriptLPFP : MonoBehaviour {
 	}
 	
 	private void Update () {
-		if(Input.GetButton("Fire2") && !isReloading && !isRunning && !isInspecting) 
+		totalAmmoText.text = controller.GetComponent<FpsControllerLPFP>().getAmmo().ToString();
+
+		if (Input.GetButton("Fire2") && !isReloading && !isRunning && !isInspecting) 
 		{
 			isAiming = true;
 
@@ -236,8 +250,15 @@ public class AutomaticGunScriptLPFP : MonoBehaviour {
 			timescaleText.text = "0.0";
 		}
 
+		//FPSControllerLPFP gameObj;
+		//gameObj.GetComponent<FPSControllerLPFP>().g
+
 		//Set current ammo text from ammo int
 		currentAmmoText.text = currentAmmo.ToString ();
+		//gameObject.GetComponent<FPSControllerLPFP
+		//FpsControllerLPFP sn = gameObject.GetComponentInParent<FPSControllerLPFP>();
+		
+		currentHealthText.text = controller.GetComponent<FpsControllerLPFP>().getLife().ToString();
 
 		AnimationCheck ();
 
@@ -262,6 +283,8 @@ public class AutomaticGunScriptLPFP : MonoBehaviour {
 		//If out of ammo
 		if (currentAmmo == 0) 
 		{
+			Debug.Log("Prueba balas -------------------------");
+			Debug.Log(controller.GetComponent<FpsControllerLPFP>().getAmmo());
 			currentWeaponText.text = "OUT OF AMMO";
 			outOfAmmo = true;
 			//Auto reload if true
@@ -428,30 +451,32 @@ public class AutomaticGunScriptLPFP : MonoBehaviour {
 
 	private IEnumerator AutoReload () {
 		yield return new WaitForSeconds (autoReloadDelay);
-
-		if (outOfAmmo == true) 
+		if (controller.GetComponent<FpsControllerLPFP>().getAmmo() > 0)
 		{
-			anim.Play ("Reload Out Of Ammo", 0, 0f);
-
-			mainAudioSource.clip = SoundClips.reloadSoundOutOfAmmo;
-			mainAudioSource.Play ();
-
-			if (bulletInMagRenderer != null) 
+			if (outOfAmmo == true)
 			{
-				bulletInMagRenderer.GetComponent
-				<SkinnedMeshRenderer> ().enabled = false;
-				StartCoroutine (ShowBulletInMag ());
+				anim.Play("Reload Out Of Ammo", 0, 0f);
+
+				mainAudioSource.clip = SoundClips.reloadSoundOutOfAmmo;
+				mainAudioSource.Play();
+
+				if (bulletInMagRenderer != null)
+				{
+					bulletInMagRenderer.GetComponent
+					<SkinnedMeshRenderer>().enabled = false;
+					StartCoroutine(ShowBulletInMag());
+				}
 			}
-		} 
-		//Restore ammo when reloading
-		currentAmmo = ammo;
-		ammo -= 1;
-		outOfAmmo = false;
+			//Restore ammo when reloading
+			currentAmmo = ammo;
+			ammo -= 1;
+			outOfAmmo = false;
+		}
 	}
 
 	private void Reload () {
-		
-		if (outOfAmmo == true) 
+		if (controller.GetComponent<FpsControllerLPFP>().getAmmo() > 0) {
+			if (outOfAmmo == true) 
 		{
 			anim.Play ("Reload Out Of Ammo", 0, 0f);
 
@@ -479,8 +504,9 @@ public class AutomaticGunScriptLPFP : MonoBehaviour {
 			}
 		}
 
-		currentAmmo = ammo;
-		outOfAmmo = false;
+			currentAmmo = ammo;
+			outOfAmmo = false;
+		}
 	}
 
 	private IEnumerator ShowBulletInMag () {
