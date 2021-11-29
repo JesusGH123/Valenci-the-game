@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using FPSControllerLPFP;
 
 public class GrenadeScript : MonoBehaviour {
 
@@ -80,7 +81,7 @@ public class GrenadeScript : MonoBehaviour {
 			Rigidbody rb = hit.GetComponent<Rigidbody> ();
 
 			//Add force to nearby rigidbodies
-			if (rb != null)
+			if (rb != null && hit.gameObject.tag != "Player")
 				rb.AddExplosionForce (power * 5, explosionPos, radius, 3.0F);
 			
 			//If the explosion hits "Target" tag and isHit is false
@@ -108,7 +109,7 @@ public class GrenadeScript : MonoBehaviour {
 			//If the explosion hits the player
 			if (hit.gameObject.tag == "Player")
 			{
-				Debug.Log("Me pegue a mi");
+				hit.gameObject.GetComponent<FpsControllerLPFP>().StartCoroutine("characterDamage", 5);
 			}
 		}
 

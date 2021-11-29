@@ -125,8 +125,6 @@ public class AutomaticGunScriptLPFP : MonoBehaviour {
 	public Text totalAmmoText;
 	public Text currentHealthText;
 
-	public Button pauseBtn;
-
 	[System.Serializable]
 	public class prefabs
 	{  
@@ -206,238 +204,245 @@ public class AutomaticGunScriptLPFP : MonoBehaviour {
 	}
 	
 	private void Update () {
-		totalAmmoText.text = controller.GetComponent<FpsControllerLPFP>().getAmmo().ToString();
-
-		if (Input.GetButton("Fire2") && !isReloading && !isRunning && !isInspecting) 
+		if (!CanvasScript.gamePaused)
 		{
-			isAiming = true;
 
-			anim.SetBool ("Aim", true);
+			totalAmmoText.text = controller.GetComponent<FpsControllerLPFP>().getAmmo().ToString();
 
-			//When right click is released
-			gunCamera.fieldOfView = Mathf.Lerp(gunCamera.fieldOfView,
-				aimFov,fovSpeed * Time.deltaTime);
-
-			if (!soundHasPlayed) 
+			if (Input.GetButton("Fire2") && !isReloading && !isRunning && !isInspecting)
 			{
-				mainAudioSource.clip = SoundClips.aimSound;
-				mainAudioSource.Play ();
-	
-				soundHasPlayed = true;
-			}
-		} 
-		else 
-		{
-			gunCamera.fieldOfView = Mathf.Lerp(gunCamera.fieldOfView,
-				defaultFov,fovSpeed * Time.deltaTime);
+				isAiming = true;
 
-			isAiming = false;
+				anim.SetBool("Aim", true);
 
-			anim.SetBool ("Aim", false);
-				
-			soundHasPlayed = false;
-		}
+				//When right click is released
+				gunCamera.fieldOfView = Mathf.Lerp(gunCamera.fieldOfView,
+					aimFov, fovSpeed * Time.deltaTime);
 
-		if (randomMuzzleflash == true) 
-		{
-			randomMuzzleflashValue = Random.Range (minRandomValue, maxRandomValue);
-		}
-
-		//Pause game when 5 key is pressed
-		if (Input.GetKeyDown (KeyCode.Alpha5)) 
-		{
-			Time.timeScale = 0.0f;
-			timescaleText.text = "0.0";
-		}
-
-		//FPSControllerLPFP gameObj;
-		//gameObj.GetComponent<FPSControllerLPFP>().g
-
-		//Set current ammo text from ammo int
-		currentAmmoText.text = currentAmmo.ToString ();
-		//gameObject.GetComponent<FPSControllerLPFP
-		//FpsControllerLPFP sn = gameObject.GetComponentInParent<FPSControllerLPFP>();
-		
-		currentHealthText.text = controller.GetComponent<FpsControllerLPFP>().getLife().ToString();
-
-		AnimationCheck ();
-
-		//Play knife attack 1 animation when Q key is pressed
-		if (Input.GetKeyDown (KeyCode.Q) && !isInspecting) 
-		{
-			anim.Play ("Knife Attack 1", 0, 0f);
-		}
-		//Play knife attack 2 animation when F key is pressed
-		if (Input.GetKeyDown (KeyCode.F) && !isInspecting) 
-		{
-			anim.Play ("Knife Attack 2", 0, 0f);
-		}
-			
-		//Throw grenade when pressing G key
-		if (Input.GetKeyDown (KeyCode.G) && !isInspecting) 
-		{
-			StartCoroutine (GrenadeSpawnDelay ());
-			anim.Play("GrenadeThrow", 0, 0.0f);
-		}
-
-		//If out of ammo
-		if (currentAmmo == 0) 
-		{
-			Debug.Log("Prueba balas -------------------------");
-			Debug.Log(controller.GetComponent<FpsControllerLPFP>().getAmmo());
-			currentWeaponText.text = "OUT OF AMMO";
-			outOfAmmo = true;
-			//Auto reload if true
-			if (autoReload == true && !isReloading) 
-			{
-				StartCoroutine (AutoReload ());
-			}
-		} 
-		else 
-		{
-			currentWeaponText.text = storedWeaponName.ToString ();
-			outOfAmmo = false;
-		}
-			
-		if (Input.GetMouseButton (0) && !outOfAmmo && !isReloading && !isInspecting && !isRunning) 
-		{
-			if (Time.time - lastFired > 1 / fireRate) 
-			{
-				lastFired = Time.time;
-
-				currentAmmo -= 1;
-
-				shootAudioSource.clip = SoundClips.shootSound;
-				shootAudioSource.Play ();
-
-				if (!isAiming)
+				if (!soundHasPlayed)
 				{
-					anim.Play ("Fire", 0, 0f);
-					if (!randomMuzzleflash && 
-						enableMuzzleflash == true) 
-					{
-						muzzleParticles.Emit (1);
-						StartCoroutine(MuzzleFlashLight());
-					} 
-					else if (randomMuzzleflash == true)
-					{
-						if (randomMuzzleflashValue == 1) 
-						{
-							if (enableSparks == true) 
-							{
-								sparkParticles.Emit (Random.Range (minSparkEmission, maxSparkEmission));
-							}
-							if (enableMuzzleflash == true) 
-							{
-								muzzleParticles.Emit (1);
-								StartCoroutine (MuzzleFlashLight ());
-							}
-						}
-					}
-				} 
-				else
-				{
-					
-					anim.Play ("Aim Fire", 0, 0f);
+					mainAudioSource.clip = SoundClips.aimSound;
+					mainAudioSource.Play();
 
-					if (!randomMuzzleflash) {
-						muzzleParticles.Emit (1);
-					} 
-					else if (randomMuzzleflash == true) 
-					{
-						if (randomMuzzleflashValue == 1) 
-						{
-							if (enableSparks == true) 
-							{
-								sparkParticles.Emit (Random.Range (minSparkEmission, maxSparkEmission));
-							}
-							if (enableMuzzleflash == true) 
-							{
-								muzzleParticles.Emit (1);
-								StartCoroutine (MuzzleFlashLight ());
-							}
-						}
-					}
+					soundHasPlayed = true;
 				}
-
-				var bullet = (Transform)Instantiate (
-					Prefabs.bulletPrefab,
-					Spawnpoints.bulletSpawnPoint.transform.position,
-					Spawnpoints.bulletSpawnPoint.transform.rotation);
-
-				bullet.GetComponent<Rigidbody>().velocity = 
-					bullet.transform.forward * bulletForce;
-				
-				Instantiate (Prefabs.casingPrefab, 
-					Spawnpoints.casingSpawnPoint.transform.position, 
-					Spawnpoints.casingSpawnPoint.transform.rotation);
 			}
-		}
+			else
+			{
+				gunCamera.fieldOfView = Mathf.Lerp(gunCamera.fieldOfView,
+					defaultFov, fovSpeed * Time.deltaTime);
 
-		//Inspect weapon when T key is pressed
-		if (Input.GetKeyDown (KeyCode.T)) 
-		{
-			anim.SetTrigger ("Inspect");
-		}
+				isAiming = false;
 
-		//Toggle weapon holster when E key is pressed
-		if (Input.GetKeyDown (KeyCode.E) && !hasBeenHolstered) 
-		{
-			holstered = true;
+				anim.SetBool("Aim", false);
 
-			mainAudioSource.clip = SoundClips.holsterSound;
-			mainAudioSource.Play();
+				soundHasPlayed = false;
+			}
 
-			hasBeenHolstered = true;
-		} 
-		else if (Input.GetKeyDown (KeyCode.E) && hasBeenHolstered) 
-		{
-			holstered = false;
+			if (randomMuzzleflash == true)
+			{
+				randomMuzzleflashValue = Random.Range(minRandomValue, maxRandomValue);
+			}
 
-			mainAudioSource.clip = SoundClips.takeOutSound;
-			mainAudioSource.Play ();
+			//Pause game when 5 key is pressed
+			if (Input.GetKeyDown(KeyCode.Alpha5))
+			{
+				Time.timeScale = 0.0f;
+				timescaleText.text = "0.0";
+			}
 
-			hasBeenHolstered = false;
-		}
+			//FPSControllerLPFP gameObj;
+			//gameObj.GetComponent<FPSControllerLPFP>().g
 
-		if (holstered == true) 
-		{
-			anim.SetBool ("Holster", true);
-		} 
-		else 
-		{
-			anim.SetBool ("Holster", false);
-		}
+			//Set current ammo text from ammo int
+			currentAmmoText.text = currentAmmo.ToString();
+			//gameObject.GetComponent<FPSControllerLPFP
+			//FpsControllerLPFP sn = gameObject.GetComponentInParent<FPSControllerLPFP>();
 
-		if (Input.GetKeyDown (KeyCode.R) && !isReloading && !isInspecting) 
-		{
-			Reload ();
-		}
+			currentHealthText.text = controller.GetComponent<FpsControllerLPFP>().getLife().ToString();
 
-		if (Input.GetKey (KeyCode.W) && !isRunning || 
-			Input.GetKey (KeyCode.A) && !isRunning || 
-			Input.GetKey (KeyCode.S) && !isRunning || 
-			Input.GetKey (KeyCode.D) && !isRunning) 
-		{
-			anim.SetBool ("Walk", true);
-		} else {
-			anim.SetBool ("Walk", false);
-		}
+			AnimationCheck();
 
-		if ((Input.GetKey (KeyCode.W) && Input.GetKey (KeyCode.LeftShift))) 
-		{
-			isRunning = true;
-		} else {
-			isRunning = false;
-		}
-		
-		if (isRunning == true) 
-		{
-			anim.SetBool ("Run", true);
-		} 
-		else 
-		{
-			anim.SetBool ("Run", false);
+			//Play knife attack 1 animation when Q key is pressed
+			if (Input.GetKeyDown(KeyCode.Q) && !isInspecting)
+			{
+				anim.Play("Knife Attack 1", 0, 0f);
+			}
+			//Play knife attack 2 animation when F key is pressed
+			if (Input.GetKeyDown(KeyCode.F) && !isInspecting)
+			{
+				anim.Play("Knife Attack 2", 0, 0f);
+			}
+
+			//Throw grenade when pressing G key
+			if (Input.GetKeyDown(KeyCode.G) && !isInspecting)
+			{
+				StartCoroutine(GrenadeSpawnDelay());
+				anim.Play("GrenadeThrow", 0, 0.0f);
+			}
+
+			//If out of ammo
+			if (currentAmmo == 0)
+			{
+				currentWeaponText.text = "OUT OF AMMO";
+				outOfAmmo = true;
+				//Auto reload if true
+				if (autoReload == true && !isReloading)
+				{
+					StartCoroutine(AutoReload());
+				}
+			}
+			else
+			{
+				currentWeaponText.text = storedWeaponName.ToString();
+				outOfAmmo = false;
+			}
+
+			if (Input.GetMouseButton(0) && !outOfAmmo && !isReloading && !isInspecting && !isRunning)
+			{
+				if (Time.time - lastFired > 1 / fireRate)
+				{
+					lastFired = Time.time;
+
+					currentAmmo -= 1;
+
+					shootAudioSource.clip = SoundClips.shootSound;
+					shootAudioSource.Play();
+
+					if (!isAiming)
+					{
+						anim.Play("Fire", 0, 0f);
+						if (!randomMuzzleflash &&
+							enableMuzzleflash == true)
+						{
+							muzzleParticles.Emit(1);
+							StartCoroutine(MuzzleFlashLight());
+						}
+						else if (randomMuzzleflash == true)
+						{
+							if (randomMuzzleflashValue == 1)
+							{
+								if (enableSparks == true)
+								{
+									sparkParticles.Emit(Random.Range(minSparkEmission, maxSparkEmission));
+								}
+								if (enableMuzzleflash == true)
+								{
+									muzzleParticles.Emit(1);
+									StartCoroutine(MuzzleFlashLight());
+								}
+							}
+						}
+					}
+					else
+					{
+
+						anim.Play("Aim Fire", 0, 0f);
+
+						if (!randomMuzzleflash)
+						{
+							muzzleParticles.Emit(1);
+						}
+						else if (randomMuzzleflash == true)
+						{
+							if (randomMuzzleflashValue == 1)
+							{
+								if (enableSparks == true)
+								{
+									sparkParticles.Emit(Random.Range(minSparkEmission, maxSparkEmission));
+								}
+								if (enableMuzzleflash == true)
+								{
+									muzzleParticles.Emit(1);
+									StartCoroutine(MuzzleFlashLight());
+								}
+							}
+						}
+					}
+
+					var bullet = (Transform)Instantiate(
+						Prefabs.bulletPrefab,
+						Spawnpoints.bulletSpawnPoint.transform.position,
+						Spawnpoints.bulletSpawnPoint.transform.rotation);
+
+					bullet.GetComponent<Rigidbody>().velocity =
+						bullet.transform.forward * bulletForce;
+
+					Instantiate(Prefabs.casingPrefab,
+						Spawnpoints.casingSpawnPoint.transform.position,
+						Spawnpoints.casingSpawnPoint.transform.rotation);
+				}
+			}
+
+			//Inspect weapon when T key is pressed
+			if (Input.GetKeyDown(KeyCode.T))
+			{
+				anim.SetTrigger("Inspect");
+			}
+
+			//Toggle weapon holster when E key is pressed
+			if (Input.GetKeyDown(KeyCode.E) && !hasBeenHolstered)
+			{
+				holstered = true;
+
+				mainAudioSource.clip = SoundClips.holsterSound;
+				mainAudioSource.Play();
+
+				hasBeenHolstered = true;
+			}
+			else if (Input.GetKeyDown(KeyCode.E) && hasBeenHolstered)
+			{
+				holstered = false;
+
+				mainAudioSource.clip = SoundClips.takeOutSound;
+				mainAudioSource.Play();
+
+				hasBeenHolstered = false;
+			}
+
+			if (holstered == true)
+			{
+				anim.SetBool("Holster", true);
+			}
+			else
+			{
+				anim.SetBool("Holster", false);
+			}
+
+			if (Input.GetKeyDown(KeyCode.R) && !isReloading && !isInspecting)
+			{
+				Reload();
+			}
+
+			if (Input.GetKey(KeyCode.W) && !isRunning ||
+				Input.GetKey(KeyCode.A) && !isRunning ||
+				Input.GetKey(KeyCode.S) && !isRunning ||
+				Input.GetKey(KeyCode.D) && !isRunning)
+			{
+				anim.SetBool("Walk", true);
+			}
+			else
+			{
+				anim.SetBool("Walk", false);
+			}
+
+			if ((Input.GetKey(KeyCode.W) && Input.GetKey(KeyCode.LeftShift)))
+			{
+				isRunning = true;
+			}
+			else
+			{
+				isRunning = false;
+			}
+
+			if (isRunning == true)
+			{
+				anim.SetBool("Run", true);
+			}
+			else
+			{
+				anim.SetBool("Run", false);
+			}
 		}
 	}
 

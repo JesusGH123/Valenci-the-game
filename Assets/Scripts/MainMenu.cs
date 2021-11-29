@@ -5,19 +5,13 @@ using UnityEngine.SceneManagement;
 
 public class MainMenu : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    public void ExitBtn()
     {
-        
-    }
+        Application.Quit(0);
+    } 
 
-    // Update is called once per frame
-    void Update()
+    public void PlayBtn()
     {
-        if(Input.anyKeyDown)
-        {
-            Debug.Log(" Object is not valid for this category.");
-            SceneManager.LoadScene("SampleScene");
-        }
+        SceneManager.LoadScene("Game");
     }
 }

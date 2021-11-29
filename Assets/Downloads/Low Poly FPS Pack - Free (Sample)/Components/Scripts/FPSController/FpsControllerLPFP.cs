@@ -2,6 +2,7 @@
 using System.Linq;
 using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 namespace FPSControllerLPFP
 {
@@ -85,6 +86,8 @@ namespace FPSControllerLPFP
         private readonly RaycastHit[] _groundCastResults = new RaycastHit[8];
         private readonly RaycastHit[] _wallCastResults = new RaycastHit[8];
 
+        public GameObject ammoBox;
+
         private void Start()
         {
             _rigidbody = GetComponent<Rigidbody>();
@@ -162,7 +165,7 @@ namespace FPSControllerLPFP
 
             if (collision.gameObject.tag == "Enemy" && !immunity)
             {
-                StartCoroutine("characterDamage");
+                StartCoroutine("characterDamage", 1);
             }
         }
 
@@ -177,12 +180,11 @@ namespace FPSControllerLPFP
         private void Update()
         {
             if (Playerhealth == 0)        //Player death
-                Destroy(gameObject);    //For now, we are destroying the player (we have to change this later)
+                SceneManager.LoadScene("GameOver");    //For now, we are destroying the player (we have to change this later)
 
             if(Input.GetKeyDown(KeyCode.R) && PlayerAmmo > 0 )
             {
-                StartCoroutine("Recarga");
-                Debug.Log("Que pex");
+                StartCoroutine("Reload");
             }
 
             arms.position = transform.position + transform.TransformVector(armPosition);
@@ -202,7 +204,6 @@ namespace FPSControllerLPFP
             if (Input.GetKeyDown(KeyCode.Q))
             {
                 //Wait for the animation
-
                 if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hit, 1f, enemyLayer))
                     StartCoroutine("WaitKnife", hit);
             }
@@ -418,9 +419,9 @@ namespace FPSControllerLPFP
             }
         }
 
-        IEnumerator characterDamage()
+        IEnumerator characterDamage(int damage = 1)
         {
-            Playerhealth--;
+            Playerhealth-= damage;
             immunity = true;
             yield return new WaitForSeconds(3.0f);
             immunity = false;
@@ -432,14 +433,11 @@ namespace FPSControllerLPFP
             hit.transform.gameObject.GetComponent<ZombieBehaviour>().ReceiveDamage(3);
         }
 
-        IEnumerator Recarga()
+        IEnumerator Reload()
         {
-
             PlayerAmmo-=30;
-            //Debug.Log(PlayerAmmo);
             yield return null;
         }
-
 
         public int getLife()
         {
@@ -449,11 +447,6 @@ namespace FPSControllerLPFP
         public int getAmmo()
         {
             return PlayerAmmo;
-        }
-
-        public void PauseGame()
-        {
-            Time.timeScale = 0;
         }
 
     }
