@@ -18418,7 +18418,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6466667306946578108, guid: b9ca752c3df4dec4cadafd04fc5d444b, type: 3}
       propertyPath: m_Text
-      value: The horde is coming!
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 6466667306946578108, guid: b9ca752c3df4dec4cadafd04fc5d444b, type: 3}
       propertyPath: m_Color.a
@@ -22487,7 +22487,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   zombie: {fileID: 4803014352389650695, guid: 06cb2b131fe009c47a523671a8fa9ed8, type: 3}
-  hordesKilled: 0
   alarm: {fileID: 8300000, guid: f58bb8d4b2236ec4a8ffaf565c984d3a, type: 3}
 --- !u!4 &1644308340
 Transform:

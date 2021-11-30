@@ -9,7 +9,7 @@ public class ZombieSpawner : MonoBehaviour
     private GameObject zombie;
     public static bool nextHorde;
 
-    public int hordesKilled = 0;
+    public static int hordesKilled = 0;
     private int hordeLimit = 4;
 
     private AudioSource audioSource;

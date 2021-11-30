@@ -894,6 +894,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   agent: {fileID: 3771106811672763054}
   life: 3
+  isDead: 0
 --- !u!82 &5856024853877426042
 AudioSource:
   m_ObjectHideFlags: 0

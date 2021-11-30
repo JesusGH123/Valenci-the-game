@@ -14,8 +14,9 @@ public class ZombieBehaviour : MonoBehaviour
     [SerializeField]
     private int life = 3;
     private float zombieSpeed = 4f;
-    private bool isDead = false;
+    public bool isDead = false;
 
+    public static int score = 0;
     void Start()
     {
         if (player == null)
@@ -37,6 +38,8 @@ public class ZombieBehaviour : MonoBehaviour
             if (life <= 0)   //Zombie is killed
             {
                 StartCoroutine("Dying");
+                score += 100;
+                Debug.Log("Score added: " + score);
             }
         }
     }
@@ -56,7 +59,6 @@ public class ZombieBehaviour : MonoBehaviour
     {
         if (collision.gameObject.tag == "Ammo")
             ReceiveDamage(1);
-
     }
 
     IEnumerator Dying()
@@ -66,6 +68,7 @@ public class ZombieBehaviour : MonoBehaviour
         animator.SetBool("Died", true);
         zombieAudio.enabled = false;
         agent.enabled = false;
+        Physics.IgnoreCollision(gameObject.GetComponent<Collider>(), player.gameObject.GetComponent<Collider>());
 
         yield return new WaitForSeconds(5.0f);
         Destroy(gameObject);
