@@ -897,6 +897,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e9e225b73db87c147aa62c823beb5b31, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  scoreText: {fileID: 1335906692}
 --- !u!4 &54876915
 Transform:
   m_ObjectHideFlags: 0
@@ -9849,7 +9850,7 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.3
+  near clip plane: 1.61
   far clip plane: 1000
   field of view: 60
   orthographic: 0
@@ -16843,9 +16844,9 @@ RectTransform:
   m_Father: {fileID: 474303274}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -5, y: -318}
+  m_AnchorMin: {x: 0.5, y: 0}
+  m_AnchorMax: {x: 0.5, y: 0}
+  m_AnchoredPosition: {x: -5, y: 166}
   m_SizeDelta: {x: 449.165, y: 98.3067}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &940200089
@@ -23849,12 +23850,12 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 196
+    m_Font: {fileID: 12800000, guid: d5e7fc19a55bb2a48bc99ab088256f61, type: 3}
+    m_FontSize: 147
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 10
-    m_MaxSize: 196
+    m_MaxSize: 261
     m_Alignment: 0
     m_AlignByGeometry: 0
     m_RichText: 1
@@ -37215,11 +37216,11 @@ RectTransform:
   m_Father: {fileID: 474303274}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -16, y: 202}
-  m_SizeDelta: {x: 1031.3705, y: 285.835}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0.5, y: 0.7708205}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: -16.000042, y: -209.06848}
+  m_SizeDelta: {x: 529.333, y: -60.389038}
+  m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &2001951987
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -37241,13 +37242,13 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 196
+    m_Font: {fileID: 12800000, guid: d5e7fc19a55bb2a48bc99ab088256f61, type: 3}
+    m_FontSize: 161
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 10
-    m_MaxSize: 196
-    m_Alignment: 0
+    m_MaxSize: 300
+    m_Alignment: 1
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
